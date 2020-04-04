@@ -113,13 +113,13 @@ int main(void) {
         Shader("../vert.glsl", "../frag.glsl")
     );
 
-    // create dino model
-    std::vector<float> dinoCoords;
-    std::vector<float> dinoIndices;
-    loadObj(dinoCoords, dinoIndices, "../models/dino.obj");
-    // ObjModel dinoObj(
-    //     dinoCoords,
-    //     dinoIndices,
+    // create mystery model
+    std::vector<float> mysteryCoords;
+    std::vector<float> mysteryIndices;
+    loadObj(mysteryCoords, mysteryIndices, "../models/example.obj");
+    // ObjModel mysteryObj(
+    //     mysteryCoords,
+    //     mysteryIndices,
     //     Shader("../vert.glsl", "../frag.glsl")
     // );
 
