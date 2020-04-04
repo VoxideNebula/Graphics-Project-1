@@ -14,7 +14,7 @@
 
 template <typename V, typename I>
 void loadObj(V& coords, I& indices, const std::string& modelPath) {
-    std::vector<unsiged int> vertexIndices, uvIndices, normalIndices;
+    std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
     std::vector<Vector4> temp_vertices;
     std::vector<Vector4> temp_uvs;
     std::vector<Vector4> temp_normals;
@@ -63,15 +63,15 @@ void loadObj(V& coords, I& indices, const std::string& modelPath) {
             if (matches != 9){
                 printf("Obj can't be read by our simple parser : ( Try exporting with other options\n");
             }
-            vertexIndices.push_back(vertexIndex[0]);
-            vertexIndices.push_back(vertexIndex[1]);
-            vertexIndices.push_back(vertexIndex[2]);
-            uvIndices    .push_back(uvIndex[0]);
-            uvIndices    .push_back(uvIndex[1]);
-            uvIndices    .push_back(uvIndex[2]);
-            normalIndices.push_back(normalIndex[0]);
-            normalIndices.push_back(normalIndex[1]);
-            normalIndices.push_back(normalIndex[2]);
+            // vertexIndices.push_back(vertexIndex[0]);
+            // vertexIndices.push_back(vertexIndex[1]);
+            // vertexIndices.push_back(vertexIndex[2]);
+            // uvIndices    .push_back(uvIndex[0]);
+            // uvIndices    .push_back(uvIndex[1]);
+            // uvIndices    .push_back(uvIndex[2]);
+            // normalIndices.push_back(normalIndex[0]);
+            // normalIndices.push_back(normalIndex[1]);
+            // normalIndices.push_back(normalIndex[2]);
         }
     }
 }
