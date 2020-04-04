@@ -107,21 +107,13 @@ int main(void) {
         return -1;
     }
 
-    // create a sphere Model
-    Model sphereObj(
-        Sphere(20, .5, 1, .2, .4).coords,
+    // create character model
+    std::vector<float> characterCoords;
+    loadObj(characterCoords, "../models/example.obj");
+    Model characterObj(
+        characterCoords,
         Shader("../vert.glsl", "../frag.glsl")
     );
-
-    // create mystery model
-    std::vector<float> mysteryCoords;
-    std::vector<float> mysteryIndices;
-    loadObj(mysteryCoords, mysteryIndices, "../models/example.obj");
-    // ObjModel mysteryObj(
-    //     mysteryCoords,
-    //     mysteryIndices,
-    //     Shader("../vert.glsl", "../frag.glsl")
-    // );
 
     // setup projection
     Matrix4 projection;
@@ -145,14 +137,14 @@ int main(void) {
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         // process input
-        processInput(sphereObj.model, window);
+        processInput(characterObj.model, window);
 
         /* Render here */
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // activate shader
-        renderer.render(camera, sphereObj, lightPos);
+        renderer.render(camera, characterObj, lightPos);
 
         /* Swap front and back and poll for io events */
         glfwSwapBuffers(window);
