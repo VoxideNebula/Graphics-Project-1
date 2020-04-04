@@ -105,6 +105,7 @@ int main(void) {
         return -1;
     }
 
+    // create a sphere Model
     Model sphereObj(
         Sphere(20, .5, 1, .2, .4).coords,
         Shader("../vert.glsl", "../frag.glsl")
@@ -114,12 +115,12 @@ int main(void) {
     Matrix4 projection;
     projection.perspective(45, 1, .01, 10);
 
+    // setup camera
     Camera camera;
     camera.projection = projection;
     camera.eye = Vector4 (0, 5, 0);
     camera.origin = Vector4 (0, 0, 0);
     camera.up = Vector4 (1, 0, 0);
-    // camera.look_at(eye, origin, up);
 
     // and use z-buffering
     glEnable(GL_DEPTH_TEST);
