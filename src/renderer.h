@@ -6,7 +6,8 @@
 class Renderer {
 public:
 
-    void render(const Camera& camera, Model& m, const Vector4& light) {
+    template <typename M>
+    void render(const Camera& camera, M& m, const Vector4& light) {
 
         m.shader.use();
         Uniform::set(m.shader.id(), "model", m.model);

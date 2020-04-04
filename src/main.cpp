@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,6 +18,7 @@
 #include "model.h"
 #include "camera.h"
 #include "renderer.h"
+#include "obj_loader.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 960;
@@ -110,6 +112,16 @@ int main(void) {
         Sphere(20, .5, 1, .2, .4).coords,
         Shader("../vert.glsl", "../frag.glsl")
     );
+
+    // create dino model
+    std::vector<float> dinoCoords;
+    std::vector<float> dinoIndices;
+    loadObj(dinoCoords, dinoIndices, "../models/dino.obj");
+    // ObjModel dinoObj(
+    //     dinoCoords,
+    //     dinoIndices,
+    //     Shader("../vert.glsl", "../frag.glsl")
+    // );
 
     // setup projection
     Matrix4 projection;
