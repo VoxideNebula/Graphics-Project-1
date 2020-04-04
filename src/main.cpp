@@ -9,10 +9,14 @@
 
 #include <csci441/shader.h>
 #include <csci441/matrix4.h>
+#include <csci441/matrix3.h>
 #include <csci441/vector4.h>
 #include <csci441/uniform.h>
 
 #include "shape.h"
+#include "model.h"
+#include "camera.h"
+#include "renderer.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 960;
@@ -101,81 +105,41 @@ int main(void) {
         return -1;
     }
 
-
-    // create c
-    // Cylinder c(20, 1, .2, .4);
-    // Cone c(20, 1, .2, .4);
-    Sphere c(20, .5, 1, .2, .4);
-    // Torus c(20, .75, .25, 1, .2, .4);
-    // DiscoCube c;
-
-    // copy vertex data
-    GLuint VBO1;
-    glGenBuffers(1, &VBO1);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-    glBufferData(GL_ARRAY_BUFFER, c.coords.size()*sizeof(float),
-            &c.coords[0], GL_STATIC_DRAW);
-
-    // describe vertex layout
-    GLuint VAO1;
-    glGenVertexArrays(1, &VAO1);
-    glBindVertexArray(VAO1);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-            (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-            (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-            (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
+    Model sphereObj(
+        Sphere(20, .5, 1, .2, .4).coords,
+        Shader("../vert.glsl", "../frag.glsl")
+    );
 
     // setup projection
     Matrix4 projection;
     projection.perspective(45, 1, .01, 10);
 
-    // setup view
-    Vector4 eye(0, 0, -2);
-    Vector4 origin(0, 0, 0);
-    Vector4 up(0, 1, 0);
-    Vector4 light(0, 1, -1);
-
-    Matrix4 camera;
-    camera.look_at(eye, origin, up);
-
-    // create the shaders
-    Shader shader("../vert.glsl", "../frag.glsl");
-
-    // setup the textures
-    shader.use();
-
-    // set the matrices
-    Matrix4 model;
+    Camera camera;
+    camera.projection = projection;
+    camera.eye = Vector4 (0, 5, 0);
+    camera.origin = Vector4 (0, 0, 0);
+    camera.up = Vector4 (1, 0, 0);
+    // camera.look_at(eye, origin, up);
 
     // and use z-buffering
     glEnable(GL_DEPTH_TEST);
 
+    // create a renderer
+    Renderer renderer;
+
+    Vector4 lightPos(0.0f, 1.0f, -1.0f);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         // process input
-        processInput(model, window);
+        processInput(sphereObj.model, window);
 
         /* Render here */
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // activate shader
-        shader.use();
-
-        Uniform::set(shader.id(), "model", model);
-        Uniform::set(shader.id(), "projection", projection);
-        Uniform::set(shader.id(), "camera", camera);
-        Uniform::set(shader.id(), "light", light);
-        Uniform::set(shader.id(), "viewPos", eye);
-
-        // render the cube
-        glBindVertexArray(VAO1);
-        glDrawArrays(GL_TRIANGLES, 0, c.coords.size()*sizeof(float));
+        renderer.render(camera, sphereObj, lightPos);
 
         /* Swap front and back and poll for io events */
         glfwSwapBuffers(window);
