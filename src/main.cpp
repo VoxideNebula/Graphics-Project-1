@@ -154,8 +154,20 @@ int main(void) {
     );
     // create character texture
     glActiveTexture(GL_TEXTURE0);
-    GLuint textureQuestion = loadTexture("../img/fabric.jpg");
-    glBindTexture(GL_TEXTURE_2D, textureQuestion);
+    GLuint textureFabric = loadTexture("../img/fabric.jpg");
+    glBindTexture(GL_TEXTURE_2D, textureFabric);
+
+    // create test character
+    std::vector<float> testCharCoords;
+    loadObj(testCharCoords, "../models/character.obj");
+    Model testCharObj(
+        testCharCoords,
+        Shader("../vert.glsl", "../frag.glsl")
+    );
+    // create the texture for the test character
+    glActiveTexture(GL_TEXTURE1);
+    GLuint textureBrick = loadTexture("../img/brick.jpg");
+    glBindTexture(GL_TEXTURE_2D, textureBrick);
 
     // create maze model
 
@@ -189,6 +201,10 @@ int main(void) {
 
         // Render the character with texture 0
         renderer.render(camera, characterObj, lightPos, 0);
+
+        // render the test character
+        testCharObj.model.translate(0,0,1.0);
+        renderer.render(camera, testCharObj, lightPos, 1);
 
         /* Swap front and back and poll for io events */
         glfwSwapBuffers(window);
