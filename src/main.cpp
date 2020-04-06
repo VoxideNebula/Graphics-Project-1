@@ -23,6 +23,14 @@
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 960;
 
+// Custom stuff
+
+#define FIRST_PERSON 0
+#define THIRD_PERSON 1
+
+int camera_mode = THIRD_PERSON;
+bool spacebar_is_pressed = false;
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -53,21 +61,50 @@ Matrix4 processModel(const Matrix4& model, GLFWwindow *window) {
     else if (isPressed(window, '-')) { trans.scale(1-SCALE, 1-SCALE, 1-SCALE); }
     else if (isPressed(window, '=')) { trans.scale(1+SCALE, 1+SCALE, 1+SCALE); }
     // TRANSLATE
-    else if (isPressed(window, GLFW_KEY_UP)) { trans.translate(0, TRANS, 0); }
-    else if (isPressed(window, GLFW_KEY_DOWN)) { trans.translate(0, -TRANS, 0); }
-    else if (isPressed(window, GLFW_KEY_LEFT)) { trans.translate(-TRANS, 0, 0); }
-    else if (isPressed(window, GLFW_KEY_RIGHT)) { trans.translate(TRANS, 0, 0); }
+    else if (isPressed(window, GLFW_KEY_UP)) { trans.translate(TRANS, 0, 0); }
+    else if (isPressed(window, GLFW_KEY_DOWN)) { trans.translate(-TRANS, 0, 0); }
+    else if (isPressed(window, GLFW_KEY_LEFT)) { trans.translate(0, 0, -TRANS); }
+    else if (isPressed(window, GLFW_KEY_RIGHT)) { trans.translate(0, 0, TRANS); }
     else if (isPressed(window, ',')) { trans.translate(0,0,TRANS); }
     else if (isPressed(window, '.')) { trans.translate(0,0,-TRANS); }
 
     return trans * model;
 }
 
-void processInput(Matrix4& model, GLFWwindow *window) {
+void processInput(Camera& camera, Matrix4& projection, Matrix4& model, GLFWwindow *window) {
+    model = processModel(model, window);
+    
     if (isPressed(window, GLFW_KEY_ESCAPE) || isPressed(window, GLFW_KEY_Q)) {
         glfwSetWindowShouldClose(window, true);
     }
-    model = processModel(model, window);
+
+    int spacebar_status = glfwGetKey(window, GLFW_KEY_SPACE);
+
+    if (spacebar_status == GLFW_PRESS) {
+        spacebar_is_pressed = true;
+    }
+
+    if (spacebar_status == GLFW_RELEASE && spacebar_is_pressed == true) {
+        spacebar_is_pressed = false;
+        camera_mode = !camera_mode;
+
+        // Entering first person
+        if (camera_mode == FIRST_PERSON) {
+            model.scale(0.0001, 0.0001, 0.0001);
+        }
+
+        // Entering third person
+        if (camera_mode == THIRD_PERSON) { 
+            model.scale(0.9999, 0.9999, 0.9999);
+            projection.perspective(45, 1, .01, 10);
+            camera.projection = projection;
+            camera.eye = Vector4 (0, 5, 0);
+            camera.origin = Vector4 (0, 0, 0);
+            camera.up = Vector4 (1, 0, 0);
+        }
+
+        printf("camera_mode = %d\n", camera_mode);
+    }
 }
 
 void errorCallback(int error, const char* description) {
@@ -137,7 +174,7 @@ int main(void) {
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         // process input
-        processInput(characterObj.model, window);
+        processInput(camera, projection, characterObj.model, window);
 
         /* Render here */
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
