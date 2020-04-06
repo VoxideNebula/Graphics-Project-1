@@ -157,19 +157,17 @@ int main(void) {
     GLuint textureFabric = loadTexture("../img/fabric.jpg");
     glBindTexture(GL_TEXTURE_2D, textureFabric);
 
-    // create maze
-    std::vector<float> testCharCoords;
-    loadObj(testCharCoords, "../models/maze.obj");
-    Model testCharObj(
-        testCharCoords,
+    // create maze model
+    std::vector<float> mazeCoords;
+    loadObj(mazeCoords, "../models/maze.obj");
+    Model mazeObj(
+        mazeCoords,
         Shader("../vert.glsl", "../frag.glsl")
     );
-    // create the texture for the test character
+    // create the texture for the maze
     glActiveTexture(GL_TEXTURE1);
     GLuint textureBrick = loadTexture("../img/brick.jpg");
     glBindTexture(GL_TEXTURE_2D, textureBrick);
-
-    // create maze model
 
     // setup projection
     Matrix4 projection;
@@ -202,9 +200,9 @@ int main(void) {
         // Render the character with texture 0
         renderer.render(camera, characterObj, lightPos, 0);
 
-        // render the test character
-        testCharObj.model.translate(0,0,1.0);
-        renderer.render(camera, testCharObj, lightPos, 1);
+        // render the maze
+        mazeObj.model.translate(0,0,1.0);
+        renderer.render(camera, mazeObj, lightPos, 1);
 
         /* Swap front and back and poll for io events */
         glfwSwapBuffers(window);
