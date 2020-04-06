@@ -8,7 +8,9 @@
 uniform vec3 light;
 uniform vec3 viewPos;
 
-in vec3 ourColor;
+uniform sampler2D ourTexture;
+
+in vec2 uv;
 in vec3 Normal;
 in vec3 FragPos;
 
@@ -36,6 +38,7 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
     vec3 spectral = spectralStrength * spec * lightColor;
 
-    vec3 finalColor = (ambient + diffuse + spectral) * ourColor;
-    fragColor = vec4(finalColor, 1.0f);
+    vec3 finalLight = (ambient + diffuse + spectral);
+    vec4 finalColor = vec4(finalLight, 1.0f) * texture(ourTexture, uv);
+    fragColor = finalColor;
 }

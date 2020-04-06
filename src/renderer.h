@@ -7,7 +7,7 @@ class Renderer {
 public:
 
     template <typename M>
-    void render(const Camera& camera, M& m, const Vector4& light) {
+    void render(const Camera& camera, M& m, const Vector4& light, int texLocation) {
 
         m.shader.use();
         Uniform::set(m.shader.id(), "model", m.model);
@@ -15,6 +15,7 @@ public:
         Uniform::set(m.shader.id(), "camera", camera.look_at());
         Uniform::set(m.shader.id(), "viewPos", camera.eye);
         Uniform::set(m.shader.id(), "light", light);
+        glUniform1i(glGetUniformLocation(m.shader.id(), "ourTexture"), texLocation);
 
         // render the cube
         glBindVertexArray(m.vao);
