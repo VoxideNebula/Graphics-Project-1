@@ -91,7 +91,12 @@ void processInput(Camera& camera, Matrix4& projection, Matrix4& model, GLFWwindo
 
         // Entering first person
         if (camera_mode == FIRST_PERSON) {
-            model.scale(0.0001, 0.0001, 0.0001);
+            // model.scale(0.0001, 0.0001, 0.0001);
+            projection.perspective(45, 1, .01, 10);
+            camera.projection = projection;
+            camera.eye = Vector4 (0, model.values[1] + 1, 0);
+            camera.origin = Vector4 (0, 0, 0);
+            camera.up = Vector4 (1, 0, 0);
         }
 
         // Entering third person
