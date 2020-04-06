@@ -157,9 +157,9 @@ int main(void) {
     GLuint textureFabric = loadTexture("../img/fabric.jpg");
     glBindTexture(GL_TEXTURE_2D, textureFabric);
 
-    // create test character
+    // create maze
     std::vector<float> testCharCoords;
-    loadObj(testCharCoords, "../models/character.obj");
+    loadObj(testCharCoords, "../models/maze.obj");
     Model testCharObj(
         testCharCoords,
         Shader("../vert.glsl", "../frag.glsl")
