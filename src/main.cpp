@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "renderer.h"
 #include "obj_loader.h"
+#include "tex_loader.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 960;
@@ -146,11 +147,17 @@ int main(void) {
 
     // create character model
     std::vector<float> characterCoords;
-    loadObj(characterCoords, "../models/example.obj");
+    loadObj(characterCoords, "../models/character.obj");
     Model characterObj(
         characterCoords,
         Shader("../vert.glsl", "../frag.glsl")
     );
+    // create character texture
+    glActiveTexture(GL_TEXTURE0);
+    GLuint textureQuestion = loadTexture("../img/fabric.jpg");
+    glBindTexture(GL_TEXTURE_2D, textureQuestion);
+
+    // create maze model
 
     // setup projection
     Matrix4 projection;
@@ -180,8 +187,8 @@ int main(void) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // activate shader
-        renderer.render(camera, characterObj, lightPos);
+        // Render the character with texture 0
+        renderer.render(camera, characterObj, lightPos, 0);
 
         /* Swap front and back and poll for io events */
         glfwSwapBuffers(window);

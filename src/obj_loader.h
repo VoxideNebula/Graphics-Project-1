@@ -80,17 +80,18 @@ void loadObj(V& coords, const std::string& modelPath) {
     for (int i = 0; i < vertexIndices.size(); i++){
         int vertIndex     = vertexIndices.at(i);
         int normalIndex   = normalIndices.at(i);
+        int uvIndex       = uvIndices.at(i);
         Vector4 newVertex = temp_vertices.at(vertIndex-1);
         Vector4 newNormal = temp_normals.at(normalIndex-1);
+        Vector4 newUVs    = temp_uvs.at(uvIndex-1);
 
         // push the vertex values
         coords.push_back(newVertex.x());
         coords.push_back(newVertex.y());
         coords.push_back(newVertex.z());
-        // push the color values
-        coords.push_back(1.0f);
-        coords.push_back(0.0f);
-        coords.push_back(0.0f);
+        // push the texture values
+        coords.push_back(newUVs.x());
+        coords.push_back(newUVs.y());
         // push the normal values
         coords.push_back(newNormal.x());
         coords.push_back(newNormal.y());
