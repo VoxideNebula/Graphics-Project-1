@@ -171,7 +171,8 @@ int main(void) {
 
     // setup projection
     Matrix4 projection;
-    projection.perspective(45, 1, .01, 10);
+    //projection.perspective(45, 1, .01, 10);
+    projection.ortho(-12,12,-12,12,1,11);
 
     // setup camera
     Camera camera;
@@ -201,7 +202,6 @@ int main(void) {
         renderer.render(camera, characterObj, lightPos, 0);
 
         // render the maze
-        mazeObj.model.translate(0,0,1.0);
         renderer.render(camera, mazeObj, lightPos, 1);
 
         /* Swap front and back and poll for io events */
