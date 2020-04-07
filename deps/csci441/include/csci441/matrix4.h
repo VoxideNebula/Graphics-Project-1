@@ -6,8 +6,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <glm/glm.hpp>
-
 #include "vector4.h"
 
 class Matrix4 {
@@ -21,14 +19,6 @@ public:
 
     Matrix4() {
         set_to_identity();
-    };
-
-    Matrix4(const glm::mat4& m) {
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                values[idx(i,j)] = m[j][i];
-            }
-        }
     };
 
     float operator()(int row, int col) const {

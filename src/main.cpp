@@ -31,6 +31,8 @@ const int SCREEN_HEIGHT = 960;
 
 int camera_mode = THIRD_PERSON;
 bool spacebar_is_pressed = false;
+float pitch = 0.0;
+float yaw = 0.0;
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
@@ -45,6 +47,11 @@ bool isPressed(GLFWwindow *window, int key)
 bool isReleased(GLFWwindow *window, int key)
 {
     return glfwGetKey(window, key) == GLFW_RELEASE;
+}
+
+float radians(float degrees)
+{
+    return degrees * M_PI / 180;
 }
 
 Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
@@ -97,28 +104,28 @@ Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
         if (camera_mode == THIRD_PERSON)
             trans.translate(TRANS, 0, 0);
         else
-            trans.translate(-TRANS, 0, 0);
+            trans.translate(TRANS, 0, 0);
     }
     else if (isPressed(window, GLFW_KEY_DOWN))
     {
         if (camera_mode == THIRD_PERSON)
             trans.translate(-TRANS, 0, 0);
         else
-            trans.translate(TRANS, 0, 0);
+            trans.translate(-TRANS, 0, 0);
     }
     else if (isPressed(window, GLFW_KEY_LEFT))
     {
         if (camera_mode == THIRD_PERSON)
             trans.translate(0, 0, -TRANS);
         else
-            trans.translate(0, 0, TRANS);
+            trans.translate(0, 0, -TRANS);
     }
     else if (isPressed(window, GLFW_KEY_RIGHT))
     {
         if (camera_mode == THIRD_PERSON)
             trans.translate(0, 0, TRANS);
         else
-            trans.translate(0, 0, -TRANS);
+            trans.translate(0, 0, TRANS);
     }
     else if (isPressed(window, ','))
     {
@@ -130,25 +137,43 @@ Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
     }
 
     // Pitch and yaw
-    else if (isPressed(window, GLFW_KEY_W))
+    else if (isPressed(window, GLFW_KEY_W) && camera_mode == FIRST_PERSON)
     {
+        pitch += ROT;
+        if(pitch > 87.0f)
+        pitch = 87.0f;
+        if(pitch < -87.0f)
+        pitch = -87.0f;
     }
-    else if (isPressed(window, GLFW_KEY_A))
+    else if (isPressed(window, GLFW_KEY_A) && camera_mode == FIRST_PERSON)
     {
+        yaw -= ROT;
     }
-    else if (isPressed(window, GLFW_KEY_S))
+    else if (isPressed(window, GLFW_KEY_S) && camera_mode == FIRST_PERSON)
     {
+        pitch -= ROT;
+        if(pitch > 87.0f){
+            pitch = 87;
+        }
+        if(pitch < -87.0f){
+            pitch = -87;
+        }
     }
-    else if (isPressed(window, GLFW_KEY_D))
+    else if (isPressed(window, GLFW_KEY_D) && camera_mode == FIRST_PERSON)
     {
+        yaw += ROT;
     }
+
+    if (camera_mode == FIRST_PERSON){
+        float x = cos(radians(yaw)) * cos(radians(pitch));
+        float y = sin(radians(pitch));
+        float z = sin(radians(yaw)) * cos(radians(pitch));
+        Vector4 direction(x,y,z);
+        camera.front = direction;
+    }
+
 
     return trans * model;
-}
-
-float radians(float degrees)
-{
-    return degrees * M_PI / 180;
 }
 
 void processInput(Camera &camera, Matrix4 &projection, Matrix4 &model, GLFWwindow *window)
@@ -192,6 +217,7 @@ void processInput(Camera &camera, Matrix4 &projection, Matrix4 &model, GLFWwindo
             camera.eye = Vector4(model.values[12] + 1, 1, model.values[14]);
             camera.origin = Vector4(0, 1, -1);
             camera.up = Vector4(0, 1, 0);
+            camera.front = Vector4(0,0,0);
         }
 
         // Entering third person
@@ -203,6 +229,7 @@ void processInput(Camera &camera, Matrix4 &projection, Matrix4 &model, GLFWwindo
             camera.eye = Vector4(0, 5, 0);
             camera.origin = Vector4(0, 0, 0);
             camera.up = Vector4(1, 0, 0);
+            camera.front = Vector4(0, -5, 0);
         }
     }
 }
@@ -284,6 +311,7 @@ int main(void)
     camera.eye = Vector4(0, 5, 0);
     camera.origin = Vector4(0, 0, 0);
     camera.up = Vector4(1, 0, 0);
+    camera.front = Vector4(0, -5, 0);
 
     // and use z-buffering
     glEnable(GL_DEPTH_TEST);
@@ -291,7 +319,7 @@ int main(void)
     // create a renderer
     Renderer renderer;
 
-    Vector4 lightPos(0.0f, 1.0f, -1.0f);
+    Vector4 lightPos(5.0f, 5.0f, -8.0f);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

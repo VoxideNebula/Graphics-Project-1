@@ -20,9 +20,6 @@ include_directories(${CSCI441_DIR}/include)
 set(STB_DIR ${DEPS_DIR}/stb)
 include_directories(${STB_DIR}/include)
 
-set(GLM_DIR ${DEPS_DIR}/glm)
-include_directories(${GLM_DIR})
-
 set(LAB ${PROJECT_NAME})
 add_executable(${LAB} main.cpp ${GLAD_C})
 target_link_libraries(${LAB} glfw ${GLFW_LIBRARIES})

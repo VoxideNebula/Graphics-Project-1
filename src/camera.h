@@ -12,11 +12,11 @@ public:
     Vector4 up;
     Vector4 front;
 
-    Camera() : eye(0,0,0), origin(0,0,0), up(0,0,0), front(0,0,-1) {}
+    Camera() : eye(0,0,0), origin(0,0,0), up(0,0,0), front(0,0,0) {}
 
     Matrix4 look_at() const {
         Matrix4 mat;
-        mat.look_at(eye, origin + front, up);
+        mat.look_at(eye, eye + front, up);
         return mat;
     }
 };
