@@ -32,107 +32,206 @@ const int SCREEN_HEIGHT = 960;
 int camera_mode = THIRD_PERSON;
 bool spacebar_is_pressed = false;
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow *window, int width, int height)
+{
     glViewport(0, 0, width, height);
 }
 
-bool isPressed(GLFWwindow *window, int key) {
+bool isPressed(GLFWwindow *window, int key)
+{
     return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-bool isReleased(GLFWwindow *window, int key) {
+bool isReleased(GLFWwindow *window, int key)
+{
     return glfwGetKey(window, key) == GLFW_RELEASE;
 }
 
-Matrix4 processModel(const Matrix4& model, GLFWwindow *window) {
+Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
+{
     Matrix4 trans;
+    Matrix4 pitch_and_yaw;
 
     const float ROT = 1;
     const float SCALE = .05;
-    const float TRANS = .01;
+    const float TRANS = .08;
 
     // ROTATE
-    if (isPressed(window, GLFW_KEY_U)) { trans.rotate_x(-ROT); }
-    else if (isPressed(window, GLFW_KEY_I)) { trans.rotate_x(ROT); }
-    else if (isPressed(window, GLFW_KEY_O)) { trans.rotate_y(-ROT); }
-    else if (isPressed(window, GLFW_KEY_P)) { trans.rotate_y(ROT); }
-    else if (isPressed(window, '[')) { trans.rotate_z(-ROT); }
-    else if (isPressed(window, ']')) { trans.rotate_z(ROT); }
+    if (isPressed(window, GLFW_KEY_U))
+    {
+        trans.rotate_x(-ROT);
+    }
+    else if (isPressed(window, GLFW_KEY_I))
+    {
+        trans.rotate_x(ROT);
+    }
+    else if (isPressed(window, GLFW_KEY_O))
+    {
+        trans.rotate_y(-ROT);
+    }
+    else if (isPressed(window, GLFW_KEY_P))
+    {
+        trans.rotate_y(ROT);
+    }
+    else if (isPressed(window, '['))
+    {
+        trans.rotate_z(-ROT);
+    }
+    else if (isPressed(window, ']'))
+    {
+        trans.rotate_z(ROT);
+    }
     // SCALE
-    else if (isPressed(window, '-')) { trans.scale(1-SCALE, 1-SCALE, 1-SCALE); }
-    else if (isPressed(window, '=')) { trans.scale(1+SCALE, 1+SCALE, 1+SCALE); }
+    else if (isPressed(window, '-'))
+    {
+        trans.scale(1 - SCALE, 1 - SCALE, 1 - SCALE);
+    }
+    else if (isPressed(window, '='))
+    {
+        trans.scale(1 + SCALE, 1 + SCALE, 1 + SCALE);
+    }
     // TRANSLATE
-    else if (isPressed(window, GLFW_KEY_UP)) { trans.translate(TRANS, 0, 0); }
-    else if (isPressed(window, GLFW_KEY_DOWN)) { trans.translate(-TRANS, 0, 0); }
-    else if (isPressed(window, GLFW_KEY_LEFT)) { trans.translate(0, 0, -TRANS); }
-    else if (isPressed(window, GLFW_KEY_RIGHT)) { trans.translate(0, 0, TRANS); }
-    else if (isPressed(window, ',')) { trans.translate(0,0,TRANS); }
-    else if (isPressed(window, '.')) { trans.translate(0,0,-TRANS); }
+    else if (isPressed(window, GLFW_KEY_UP))
+    {
+        if (camera_mode == THIRD_PERSON)
+            trans.translate(TRANS, 0, 0);
+        else
+            trans.translate(-TRANS, 0, 0);
+    }
+    else if (isPressed(window, GLFW_KEY_DOWN))
+    {
+        if (camera_mode == THIRD_PERSON)
+            trans.translate(-TRANS, 0, 0);
+        else
+            trans.translate(TRANS, 0, 0);
+    }
+    else if (isPressed(window, GLFW_KEY_LEFT))
+    {
+        if (camera_mode == THIRD_PERSON)
+            trans.translate(0, 0, -TRANS);
+        else
+            trans.translate(0, 0, TRANS);
+    }
+    else if (isPressed(window, GLFW_KEY_RIGHT))
+    {
+        if (camera_mode == THIRD_PERSON)
+            trans.translate(0, 0, TRANS);
+        else
+            trans.translate(0, 0, -TRANS);
+    }
+    else if (isPressed(window, ','))
+    {
+        trans.translate(0, 0, TRANS);
+    }
+    else if (isPressed(window, '.'))
+    {
+        trans.translate(0, 0, -TRANS);
+    }
+
+    // Pitch and yaw
+    else if (isPressed(window, GLFW_KEY_W))
+    {
+    }
+    else if (isPressed(window, GLFW_KEY_A))
+    {
+    }
+    else if (isPressed(window, GLFW_KEY_S))
+    {
+    }
+    else if (isPressed(window, GLFW_KEY_D))
+    {
+    }
 
     return trans * model;
 }
 
-void processInput(Camera& camera, Matrix4& projection, Matrix4& model, GLFWwindow *window) {
-    model = processModel(model, window);
-    
-    if (isPressed(window, GLFW_KEY_ESCAPE) || isPressed(window, GLFW_KEY_Q)) {
+float radians(float degrees)
+{
+    return degrees * M_PI / 180;
+}
+
+void processInput(Camera &camera, Matrix4 &projection, Matrix4 &model, GLFWwindow *window)
+{
+
+    model = processModel(model, camera, window);
+
+    if (isPressed(window, GLFW_KEY_ESCAPE) || isPressed(window, GLFW_KEY_Q))
+    {
         glfwSetWindowShouldClose(window, true);
     }
 
     int spacebar_status = glfwGetKey(window, GLFW_KEY_SPACE);
 
-    if (spacebar_status == GLFW_PRESS) {
+    if (spacebar_status == GLFW_PRESS)
+    {
         spacebar_is_pressed = true;
     }
 
-    if (spacebar_status == GLFW_RELEASE && spacebar_is_pressed == true) {
+    if (camera_mode == FIRST_PERSON)
+    {
+        // model.scale(0.0001, 0.0001, 0.0001);
+        projection.perspective(45, 1, .01, 10);
+        camera.projection = projection;
+        camera.eye = Vector4(model.values[12] + .05, 1, model.values[14]);
+        camera.origin = Vector4(model.values[12], model.values[1] + 1, model.values[14]);
+        camera.up = Vector4(0, 1, 0);
+    }
+
+    if (spacebar_status == GLFW_RELEASE && spacebar_is_pressed == true)
+    {
         spacebar_is_pressed = false;
         camera_mode = !camera_mode;
 
         // Entering first person
-        if (camera_mode == FIRST_PERSON) {
-            // model.scale(0.0001, 0.0001, 0.0001);
+        if (camera_mode == FIRST_PERSON)
+        {
+            model.scale(0.0001, 0.0001, 0.0001);
             projection.perspective(45, 1, .01, 10);
             camera.projection = projection;
-            camera.eye = Vector4 (0, model.values[1] + 1, 0);
-            camera.origin = Vector4 (0, 0, 0);
-            camera.up = Vector4 (1, 0, 0);
+            camera.eye = Vector4(model.values[12] + 1, 1, model.values[14]);
+            camera.origin = Vector4(0, 1, -1);
+            camera.up = Vector4(0, 1, 0);
         }
 
         // Entering third person
-        if (camera_mode == THIRD_PERSON) { 
+        if (camera_mode == THIRD_PERSON)
+        {
             model.scale(0.9999, 0.9999, 0.9999);
-            projection.perspective(45, 1, .01, 10);
+            projection.ortho(-12, 12, -12, 12, 1, 11);
             camera.projection = projection;
-            camera.eye = Vector4 (0, 5, 0);
-            camera.origin = Vector4 (0, 0, 0);
-            camera.up = Vector4 (1, 0, 0);
+            camera.eye = Vector4(0, 5, 0);
+            camera.origin = Vector4(0, 0, 0);
+            camera.up = Vector4(1, 0, 0);
         }
-
-        printf("camera_mode = %d\n", camera_mode);
     }
 }
 
-void errorCallback(int error, const char* description) {
+void errorCallback(int error, const char *description)
+{
     fprintf(stderr, "GLFW Error: %s\n", description);
 }
 
-int main(void) {
-    GLFWwindow* window;
+int main(void)
+{
+    GLFWwindow *window;
 
     glfwSetErrorCallback(errorCallback);
 
     /* Initialize the library */
-    if (!glfwInit()) { return -1; }
+    if (!glfwInit())
+    {
+        return -1;
+    }
 
-    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "proj01", NULL, NULL);
-    if (!window) {
+    if (!window)
+    {
         glfwTerminate();
         return -1;
     }
@@ -144,7 +243,8 @@ int main(void) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     // init glad
-    if (!gladLoadGL()) {
+    if (!gladLoadGL())
+    {
         std::cerr << "Failed to initialize OpenGL context" << std::endl;
         glfwTerminate();
         return -1;
@@ -155,8 +255,7 @@ int main(void) {
     loadObj(characterCoords, "../models/character.obj");
     Model characterObj(
         characterCoords,
-        Shader("../vert.glsl", "../frag.glsl")
-    );
+        Shader("../vert.glsl", "../frag.glsl"));
     // create character texture
     glActiveTexture(GL_TEXTURE0);
     GLuint textureFabric = loadTexture("../img/fabric.jpg");
@@ -167,8 +266,7 @@ int main(void) {
     loadObj(mazeCoords, "../models/maze.obj");
     Model mazeObj(
         mazeCoords,
-        Shader("../vert.glsl", "../frag.glsl")
-    );
+        Shader("../vert.glsl", "../frag.glsl"));
     // create the texture for the maze
     glActiveTexture(GL_TEXTURE1);
     GLuint textureBrick = loadTexture("../img/brick.jpg");
@@ -177,14 +275,14 @@ int main(void) {
     // setup projection
     Matrix4 projection;
     //projection.perspective(45, 1, .01, 10);
-    projection.ortho(-12,12,-12,12,1,11);
+    projection.ortho(-12, 12, -12, 12, 1, 11);
 
     // setup camera
     Camera camera;
     camera.projection = projection;
-    camera.eye = Vector4 (0, 5, 0);
-    camera.origin = Vector4 (0, 0, 0);
-    camera.up = Vector4 (1, 0, 0);
+    camera.eye = Vector4(0, 5, 0);
+    camera.origin = Vector4(0, 0, 0);
+    camera.up = Vector4(1, 0, 0);
 
     // and use z-buffering
     glEnable(GL_DEPTH_TEST);
@@ -195,7 +293,8 @@ int main(void) {
     Vector4 lightPos(0.0f, 1.0f, -1.0f);
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         // process input
         processInput(camera, projection, characterObj.model, window);
 
