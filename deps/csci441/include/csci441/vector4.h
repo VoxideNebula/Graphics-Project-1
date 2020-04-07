@@ -27,6 +27,14 @@ public:
                 values[W] - v.values[W]);
     }
 
+    Vector4 operator+(const Vector4& v) const {
+        return Vector4(
+                values[X] + v.values[X],
+                values[Y] + v.values[Y],
+                values[Z] + v.values[Z],
+                values[W] + v.values[W]);
+    }
+
     float x() const { return values[X]; }
     float y() const { return values[Y]; }
     float z() const { return values[Z]; }
