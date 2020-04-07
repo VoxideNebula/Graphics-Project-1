@@ -90,6 +90,7 @@ Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
     {
         trans.scale(1 + SCALE, 1 + SCALE, 1 + SCALE);
     }
+
     // TRANSLATE
     else if (isPressed(window, GLFW_KEY_UP))
     {
