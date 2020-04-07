@@ -2,6 +2,15 @@
 
 *Maintained by Dana Parker, Troy Oster, Ben Bushnell, and Michael S.*
 
+## How to Build the Project
+
+1. Within `csci441-graphics-proj01/`, go into the `src` directory via `cd src`
+2. Within `src/` run `mkdir build`
+3. Enter the `build` directory via `cd build`
+4. Run `cmake ..`
+5. Build the project by entering `make`
+6. Run the executable binary by entering `./proj01`
+
 ## Controls
 
 - W, A, S, and D keys
