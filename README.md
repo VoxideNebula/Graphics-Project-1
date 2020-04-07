@@ -4,7 +4,9 @@
 
 ## Controls
 
-- Arrow Keys
+- W, A, S, and D keys
+  - Control pitch and yaw of camera
+- Arrow keys
   - Movement keys (up-arrow is forward, left-arrow is left, etc.)
 - Spacebar
   - Switch between first- and third-person view
@@ -18,7 +20,9 @@ It's a simple .obj parser that was adapted from a tutorial [found online](http:/
 We understood that the purpose of the `loadObj` function would be to populate a vector with the buffer
 data for our objects. To do that, we had to understand how a .obj stores vertex information. We soon found out that
 not all .obj's are created equal, and decided it would be easiest to create a .obj parser that works with the .obj's
-that are exported from blender. The first thing that `loadObj` does is read in all of the vertices, the uv texture coordinates,
+that are exported from blender. Both the Character and Maze model were made in blender.
+
+The first thing that `loadObj` does is read in all of the vertices, the uv texture coordinates,
 the normals, and the triangle information and stores them for later. Then, in a for loop, it uses all of the stored information
 to populate the buffer data vector with each vertex in the format `[x,y,z|u,v|n1,n2,n3]`. We chose not to use an EBO,
 as we didn't have enough experience to get it working. Therefore, there are likely vertices which are rendered multiple
@@ -85,6 +89,7 @@ if (camera_mode == FIRST_PERSON)
     camera.eye = Vector4(model.values[12] + 1, 1, model.values[14]);
     camera.origin = Vector4(0, 1, -1);
     camera.up = Vector4(0, 1, 0);
+    camera.front = Vector4(0,0,0);
 }
 ```
 
@@ -102,6 +107,13 @@ if (camera_mode == THIRD_PERSON)
     camera.eye = Vector4(0, 5, 0);
     camera.origin = Vector4(0, 0, 0);
     camera.up = Vector4(1, 0, 0);
+    camera.front = Vector4(0, -5, 0);
 }
 ```
 Note how the third person view uses the orthogonal projection matrix, rather than the perspective projection matrix. The orthogonal matrix is use for the bird's eye view as it causes the maze to appear 2 dimensional. 
+
+
+## References
+1. [Learn Open Gl: Camera](https://learnopengl.com/Getting-started/Camera)
+
+2. [OpenGL-Tutorial: Model Loading](http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/)

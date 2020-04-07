@@ -136,7 +136,7 @@ Matrix4 processModel(const Matrix4 &model, Camera &camera, GLFWwindow *window)
         trans.translate(0, 0, -TRANS);
     }
 
-    // Pitch and yaw
+    // Pitch and yaw, coded with help from https://learnopengl.com/Getting-started/Camera
     else if (isPressed(window, GLFW_KEY_W) && camera_mode == FIRST_PERSON)
     {
         pitch += ROT;
